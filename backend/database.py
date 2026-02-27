@@ -89,8 +89,7 @@ class Neo4jService:
             # we iterate and use f-strings safely since types are sanitized.
             session.execute_write(_create_rels_tx, workspace_id, sanitized_rels)
 
-    def get_workspace_graph(self, workspace_id: str):
-        """Retrieves nodes and edges for a given workspace_id optimized."""
+    def get_workspace_graph(self, workspace_id):
         query = """
         MATCH (n:Entity {workspace_id: $workspace_id})
         OPTIONAL MATCH (n)-[r]->(m:Entity {workspace_id: $workspace_id})
@@ -108,16 +107,21 @@ class Neo4jService:
                 label: type(r)
             } END) AS edges
         """
-        
-        with self.driver.session(database=self.database) as session:
-            result = session.execute_read(lambda tx: tx.run(query, workspace_id=workspace_id))
-            record = result.single()
+
+        with self.driver.session() as session:
+            result = session.run(query, workspace_id=workspace_id)
+            record = result.single()   # ✅ INSIDE session
+
             if not record:
                 return {"nodes": [], "edges": []}
-            
-            # Filter out None values from edges (result of CASE WHEN)
+
+            nodes = record["nodes"] or []
             edges = [e for e in record["edges"] if e is not None]
-            return {"nodes": record["nodes"], "edges": edges}
+
+            return {
+                "nodes": nodes,
+                "edges": edges
+            }
 
     def merge_entities(self, workspace_id: str, keep_name: str, delete_name: str):
         """Merges two entities in the knowledge graph."""
