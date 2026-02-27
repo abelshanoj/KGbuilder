@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+pydantic
+neo4j
+supabase
+python-jose[cryptography]
+python-multipart
+groq
+langchain
+PyMuPDF
+python-dotenv
+cors
