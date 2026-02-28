@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit, GitMerge, X } from 'lucide-react';
+import { Edit, GitMerge, X, Info, Tag, AlignLeft, Link2 } from 'lucide-react';
 
 interface PanelProps {
     selectedEntity: any | null;
@@ -12,43 +12,59 @@ const Panel: React.FC<PanelProps> = ({ selectedEntity, onClose, onEdit, onMerge 
     if (!selectedEntity) return null;
 
     return (
-        <div className="entity-panel">
+        <div className="entity-panel visible">
             <header className="panel-header">
-                <h2>Entity Details</h2>
-                <button onClick={onClose} className="close-btn"><X size={20} /></button>
+                <div className="header-title">
+                    <Info size={18} className="header-icon" />
+                    <h2>Entity Details</h2>
+                </div>
+                <button onClick={onClose} className="close-btn" aria-label="Close panel">
+                    <X size={20} />
+                </button>
             </header>
 
             <div className="panel-body">
-                <div className="detail-item">
-                    <label>Name</label>
-                    <p>{selectedEntity.label}</p>
-                </div>
-                <div className="detail-item">
-                    <label>Type</label>
-                    <span className="type-badge">{selectedEntity.type}</span>
-                </div>
-                <div className="detail-item">
-                    <label>Description</label>
-                    <p>{selectedEntity.description || "No description available."}</p>
-                </div>
+                <div className="entity-card">
+                    <div className="entity-main-info">
+                        <div className="entity-header-row">
+                            <h1 className="entity-title">{selectedEntity.label}</h1>
+                            <span className={`type-badge ${selectedEntity.type?.toLowerCase()}`}>
+                                <Tag size={12} />
+                                {selectedEntity.type || 'Unknown'}
+                            </span>
+                        </div>
+                    </div>
 
-                <div className="connected-nodes">
-                    <h3>Connected Entities</h3>
-                    {/* List connected nodes here if available in selectedEntity */}
-                </div>
+                    <div className="detail-section">
+                        <div className="section-label">
+                            <AlignLeft size={14} />
+                            <span>Description</span>
+                        </div>
+                        <p className="entity-description">
+                            {selectedEntity.description || "No description provided for this entity."}
+                        </p>
+                    </div>
 
-                <div className="source-snippets">
-                    <h3>Source Snippets</h3>
-                    {/* List snippets here */}
+                    <div className="detail-section">
+                        <div className="section-label">
+                            <Link2 size={14} />
+                            <span>Connections</span>
+                        </div>
+                        <div className="connections-placeholder">
+                            <p>No connections to display yet.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <footer className="panel-footer">
-                <button onClick={() => onEdit(selectedEntity)} className="edit-btn">
-                    <Edit size={16} /> Edit
+                <button onClick={() => onEdit(selectedEntity)} className="panel-btn edit">
+                    <Edit size={16} />
+                    <span>Edit Entity</span>
                 </button>
-                <button onClick={() => onMerge(selectedEntity)} className="merge-btn">
-                    <GitMerge size={16} /> Merge
+                <button onClick={() => onMerge(selectedEntity)} className="panel-btn merge">
+                    <GitMerge size={16} />
+                    <span>Merge</span>
                 </button>
             </footer>
         </div>

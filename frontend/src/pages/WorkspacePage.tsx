@@ -91,6 +91,7 @@ const WorkspacePage: React.FC = () => {
                     initial={{ x: -20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.2 }}
+                    style={{ height: '100%', display: 'flex' }}
                 >
                     <Sidebar
                         onUploadClick={() => setShowUpload(true)}
@@ -140,8 +141,8 @@ const WorkspacePage: React.FC = () => {
                         ) : (
                             <motion.div
                                 key="graph"
-                                initial={{ opacity: 0, scale: 0.98 }}
-                                animate={{ opacity: 1, scale: 1 }}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
                                 className="ws-graph-wrapper"
                             >
                                 <CytoscapeGraph data={graphData} onNodeClick={handleNodeClick} />

@@ -1,86 +1,26 @@
-/* Workspace Component Scoped Styles */
-
-/* Modal Layering & Design */
-.ws-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(2, 6, 23, 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    padding: 2rem;
-}
-
-.ws-modal-content {
-    background: #0f172a;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 2rem;
-    width: 100%;
-    max-width: 520px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    overflow: hidden;
-    animation: ws-modal-in 0.3s ease-out;
-}
-
-@keyframes ws-modal-in {
-    from {
-        opacity: 0;
-        transform: scale(0.95) translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-.ws-modal-header {
-    padding: 1.5rem 2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.ws-modal-header h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-}
-
-.ws-modal-body {
-    padding: 2rem;
-}
-
-.ws-modal-footer {
-    padding: 1.5rem 2rem;
-    background: rgba(255, 255, 255, 0.02);
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-}
-
-/* Sidebar Styling */
+/* Sidebar Sidebar Styling */
 .ws-sidebar {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
     height: 100%;
     overflow: hidden;
-    padding: 1.5rem;
+    padding: 1.25rem;
+    width: 320px;
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border);
 }
 
 .ws-sidebar-section {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    background: rgba(15, 23, 42, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 1.25rem;
-    padding: 1.25rem;
     overflow: hidden;
+}
+
+.ws-sidebar-section.entities {
+    flex: 1;
+    margin-top: 0.5rem;
 }
 
 .ws-section-header {
@@ -90,109 +30,111 @@
     margin-bottom: 0.5rem;
 }
 
-.ws-section-header h3 {
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+.ws-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
     color: var(--text-muted);
+}
+
+.ws-section-title h3 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 800;
+}
+
+.ws-badge {
+    background: var(--border);
+    color: var(--text-dim);
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.5rem;
+    font-size: 0.7rem;
     font-weight: 700;
 }
 
+/* Upload Card */
+.ws-upload-card {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%);
+    border: 1px dashed var(--primary);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.ws-upload-card:hover {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+    border-style: solid;
+    transform: translateY(-2px);
+}
+
+.ws-upload-icon-wrapper {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-glow);
+    color: var(--primary);
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ws-upload-text {
+    flex: 1;
+}
+
+.ws-upload-main {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.ws-upload-sub {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.ws-upload-plus {
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+
+/* Scroll Area */
 .ws-scroll-area {
     overflow-y: auto;
-    max-height: 100%;
     padding-right: 4px;
 }
 
-.ws-scroll-area::-webkit-scrollbar {
-    width: 4px;
-}
-
-.ws-scroll-area::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-}
-
-.ws-item-card {
+.ws-item-card.compact {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    border-radius: 0.85rem;
+    gap: 0.6rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: var(--radius-md);
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid transparent;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    margin-bottom: 0.5rem;
-}
-
-.ws-item-card:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.1);
-    transform: translateX(4px);
+    margin-bottom: 0.4rem;
 }
 
 .ws-item-label {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--text-dim);
 }
 
-/* Document Specific */
-.ws-doc-icon {
-    color: var(--primary);
-    flex-shrink: 0;
-}
-
-/* Entity Specific */
-.ws-entity-tag {
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 0.2rem 0.5rem;
-    border-radius: 6px;
-    background: var(--primary-glow);
-    color: var(--primary);
-    text-transform: uppercase;
-}
-
-/* Layout Containers */
-.ws-page-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow: hidden;
-}
-
-.ws-main-layout {
-    display: grid;
-    grid-template-columns: 320px 1fr 360px;
-    flex: 1;
-    overflow: hidden;
-}
-
-.ws-graph-container {
-    padding: 1.5rem;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.ws-graph-wrapper {
-    background: #010409;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 2rem;
-    flex: 1;
-    position: relative;
-    overflow: hidden;
-    box-shadow: inset 0 2px 20px rgba(0, 0, 0, 0.5);
-}
-
-/* Search Box Customization */
+/* Search Box */
 .ws-search-wrapper {
     position: relative;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 .ws-search-wrapper svg {
@@ -201,69 +143,329 @@
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-muted);
-    pointer-events: none;
 }
 
 .ws-search-input {
     width: 100%;
-    background: rgba(2, 6, 23, 0.6) !important;
-    padding-left: 3rem !important;
-    height: 48px !important;
+    background: rgba(2, 6, 23, 0.4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    color: var(--text-main);
+    padding: 0.75rem 1rem 0.75rem 2.75rem;
+    font-size: 0.85rem;
+    outline: none;
+    transition: all 0.2s ease;
 }
 
-/* Buttons (Isolated) */
-.ws-btn {
-    display: inline-flex;
+.ws-search-input:focus {
+    border-color: var(--primary);
+    background: rgba(2, 6, 23, 0.6);
+    box-shadow: 0 0 0 1px var(--primary-glow);
+}
+
+/* Entity List */
+.ws-entity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.ws-entity-item {
+    display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.25rem;
-    border-radius: 1rem;
-    font-weight: 600;
+    gap: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: var(--radius-md);
     cursor: pointer;
     transition: all 0.2s ease;
     border: 1px solid transparent;
 }
 
-.ws-btn-primary {
+.ws-entity-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.ws-entity-marker {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+}
+
+.ws-entity-marker.company {
+    background: #10b981;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.ws-entity-marker.person {
+    background: #f59e0b;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+}
+
+.ws-entity-marker.feature {
+    background: #8b5cf6;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+}
+
+.ws-entity-marker.default {
     background: var(--primary);
-    color: white;
 }
 
-.ws-btn-primary:hover {
-    filter: brightness(1.1);
-    transform: translateY(-1px);
+.ws-entity-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
 }
 
-.ws-btn-secondary {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: white;
+.ws-entity-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.ws-btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.08);
-}
-
-.ws-btn-ghost {
-    background: transparent;
+.ws-entity-type-text {
+    font-size: 0.7rem;
     color: var(--text-muted);
-    padding: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
 }
 
-.ws-btn-ghost:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: white;
-}
-
-/* Empty State */
-.ws-empty-state {
+/* Empty States */
+.ws-empty-state-compact {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    gap: 0.75rem;
+    padding: 2rem 1rem;
     color: var(--text-muted);
-    text-align: center;
+    opacity: 0.6;
+}
+
+.ws-empty-state-compact p {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Panel Styling */
+.ws-panel-container {
+    height: 100%;
+    width: 380px;
+    background: var(--bg-surface);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+}
+
+.panel-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.panel-header h2 {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.close-btn {
+    padding: 0.4rem;
+    border-radius: 0.5rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+}
+
+.panel-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+}
+
+.entity-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.entity-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.type-badge {
+    display: inline-flex;
+    padding: 0.3rem 0.6rem;
+    border-radius: 2rem;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    background: var(--primary-glow);
+    color: var(--primary);
+}
+
+.detail-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.section-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.entity-description {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+}
+
+.panel-footer {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    gap: 0.75rem;
+    border-top: 1px solid var(--border);
+}
+
+.panel-btn {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.panel-btn.edit {
+    background: var(--primary);
+    color: white;
+}
+
+.panel-btn.merge {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border);
+    color: var(--text-dim);
+}
+
+.panel-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Modal & Upload Specifics */
+.ws-modal-header {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ws-modal-header h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.upload-zone {
+    width: 100%;
+}
+
+.drop-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 1rem;
+    padding: 3rem 2rem;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-xl);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.drop-area:hover {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.drop-area svg {
+    color: var(--primary);
+    opacity: 0.8;
+}
+
+.drop-area p {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.drop-area span {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.ws-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* Make sure the chain has height & relative positioning */
+.ws-graph-container {
+    flex: 1;
+    position: relative;
+    background: #010409;
+    background-image:
+        radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
+    background-size: 40px 40px;
+    overflow: hidden;
+}
+
+.ws-graph-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Critical — force cy-container to really take full space */
+.cy-container {
+    width: 100% !important;
+    height: 100% !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
