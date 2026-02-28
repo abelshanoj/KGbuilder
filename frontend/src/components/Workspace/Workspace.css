@@ -469,3 +469,27 @@
     margin: 0 !important;
     padding: 0 !important;
 }
+
+/* Merge Modal Specifics */
+.merge-target-item:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    transform: translateX(4px);
+}
+
+.merge-target-item:active {
+    transform: scale(0.98);
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}

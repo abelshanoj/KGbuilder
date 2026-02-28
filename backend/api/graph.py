@@ -64,7 +64,10 @@ async def edit_entity(workspace_id: str, old_name: str, new_name: str, new_type:
     if not workspace:
         raise HTTPException(status_code=404, detail="Workspace not found or access denied")
         
-    neo4j_service.edit_entity(workspace_id, old_name, new_name, new_type, new_desc)
+    try:
+        neo4j_service.edit_entity(workspace_id, old_name, new_name, new_type, new_desc)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     return {"status": "success"}
 
 @router.post("/{workspace_id}/merge")
@@ -74,5 +77,8 @@ async def merge_entities(workspace_id: str, keep: str, delete: str, user: dict =
     if not workspace:
         raise HTTPException(status_code=404, detail="Workspace not found or access denied")
         
-    neo4j_service.merge_entities(workspace_id, keep, delete)
+    try:
+        neo4j_service.merge_entities(workspace_id, keep, delete)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     return {"status": "success"}

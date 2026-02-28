@@ -11,6 +11,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, AlertCircle, RefreshCcw } from 'lucide-react';
 import '../components/Workspace/Workspace.css';
 
+import EditEntityModal from '../components/Workspace/EditEntityModal';
+import MergeEntityModal from '../components/Workspace/MergeEntityModal';
+
 const WorkspacePage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -20,6 +23,8 @@ const WorkspacePage: React.FC = () => {
     const [graphData, setGraphData] = useState<{ nodes: any[], edges: any[] }>({ nodes: [], edges: [] });
     const [selectedEntity, setSelectedEntity] = useState<any | null>(null);
     const [showUpload, setShowUpload] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [showMergeModal, setShowMergeModal] = useState(false);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<{ status?: number; message: string } | null>(null);
@@ -32,9 +37,10 @@ const WorkspacePage: React.FC = () => {
 
         try {
             // Fetch workspace details and graph in parallel for performance
+            // Use timestamp to bypass any caching for the graph data
             const [ws, graph] = await Promise.all([
                 api.get(`/workspaces/${id}`),
-                api.get(`/workspaces/${id}/graph`)
+                api.get(`/workspaces/${id}/graph?t=${Date.now()}`)
             ]);
 
             setWorkspace(ws);
@@ -57,6 +63,12 @@ const WorkspacePage: React.FC = () => {
             setLoading(false);
         }
     }, [id, navigate]);
+
+    // Added helper to clear selection before refresh as requested
+    const handleRefreshWithClear = useCallback(async () => {
+        setSelectedEntity(null);
+        await fetchWorkspaceData();
+    }, [fetchWorkspaceData]);
 
     useEffect(() => {
         // Wait for auth to be definitively resolved before fetching
@@ -163,8 +175,8 @@ const WorkspacePage: React.FC = () => {
                             <Panel
                                 selectedEntity={selectedEntity}
                                 onClose={handlePanelClose}
-                                onEdit={() => { }}
-                                onMerge={() => { }}
+                                onEdit={() => setShowEditModal(true)}
+                                onMerge={() => setShowMergeModal(true)}
                             />
                         </motion.div>
                     )}
@@ -177,6 +189,23 @@ const WorkspacePage: React.FC = () => {
                         workspaceId={id!}
                         onClose={() => setShowUpload(false)}
                         onSuccess={fetchWorkspaceData}
+                    />
+                )}
+                {showEditModal && selectedEntity && (
+                    <EditEntityModal
+                        workspaceId={id!}
+                        entity={selectedEntity}
+                        onClose={() => setShowEditModal(false)}
+                        onSuccess={handleRefreshWithClear}
+                    />
+                )}
+                {showMergeModal && selectedEntity && (
+                    <MergeEntityModal
+                        workspaceId={id!}
+                        sourceEntity={selectedEntity}
+                        allEntities={graphData.nodes}
+                        onClose={() => setShowMergeModal(false)}
+                        onSuccess={handleRefreshWithClear}
                     />
                 )}
             </AnimatePresence>
