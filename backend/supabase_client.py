@@ -37,6 +37,20 @@ class SupabaseService:
         )
         return response.data
 
+    def get_documents(self, user_id: str, workspace_id: str):
+        print("User ID: ", user_id)
+        print("Workspace ID: ", workspace_id)
+        response = (
+            self.client
+            .table("documents")
+            .select("*")
+            .eq("user_id", user_id)
+            .eq("workspace_id", workspace_id)
+            .execute()
+        )
+        print("Documents: ", response.data)
+        return response.data
+
     def create_workspace(self, user_id: str, name: str):
         response = (
             self.client
@@ -50,6 +64,31 @@ class SupabaseService:
             .execute()
         )
         return response.data[0]
+
+    def create_document(self, user_id: str, workspace_id: str, file_name: str):
+        response = (
+            self.client
+            .table("documents")
+            .insert({
+                "user_id": user_id,
+                "workspace_id": workspace_id,
+                "file_name": file_name,
+            })
+            .execute()
+        )
+        return response.data[0]
+
+    def create_documents(self, user_id: str, workspace_id: str):
+        response = (
+            self.client
+            .table("documents")
+            .select("*")
+            .eq("user_id", user_id)
+            .eq("workspace_id", workspace_id)
+            .order("updated_at", desc=True)
+            .execute()
+        )
+        return response.data
 
     def update_workspace_stats(self, workspace_id: str, user_id: str, doc_count: int, entity_count: int):
         response = (

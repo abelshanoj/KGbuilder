@@ -15,6 +15,11 @@ async def upload_and_process(workspace_id: str, file: UploadFile = File(...), us
     user_id = user["sub"]
     # Verify ownership
     workspace = supabase_service.get_workspace(workspace_id, user_id)
+    document = supabase_service.create_document(user_id, workspace_id, file.filename)
+    
+    if not document: 
+        raise HTTPException(status_code=404, detail="Document not created")
+        
     if not workspace:
         raise HTTPException(status_code=404, detail="Workspace not found or access denied")
     

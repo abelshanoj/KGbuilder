@@ -18,7 +18,9 @@ const Sidebar: React.FC<SidebarProps> = ({ onUploadClick, documents, entities, o
         return label.toLowerCase().includes(searchTerm.toLowerCase());
     });
 
-    return (
+    console.log("Documents: ", documents);
+
+    return (    
         <aside className="ws-sidebar">
             {/* Documents Section */}
             <section className="ws-sidebar-section">

@@ -17,6 +17,13 @@ class WorkspaceResponse(BaseModel):
     created_at: str
     updated_at: str
 
+class DocumentResponse(BaseModel):
+    id: str
+    file_name: str
+    user_id: str
+    workspace_id: str
+    created_at: str
+
 router = APIRouter(prefix="/workspaces", tags=["workspaces"])
 
 @router.get("/", response_model=List[WorkspaceResponse])
@@ -31,6 +38,14 @@ async def get_workspace(workspace_id: str, user: dict = Depends(get_current_user
     if not workspace:
         raise HTTPException(status_code=404, detail="Workspace not found")
     return workspace
+
+@router.get("/{workspace_id}/documents", response_model=List[DocumentResponse])
+async def get_workspace_documents(workspace_id: str, user: dict = Depends(get_current_user)):
+    user_id = user["sub"]
+    documents = supabase_service.get_documents(user_id, workspace_id)
+    if not documents:
+        return []
+    return documents
 
 @router.post("/", response_model=WorkspaceResponse)
 async def create_workspace(workspace_data: WorkspaceCreate, user: dict = Depends(get_current_user)):

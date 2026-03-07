@@ -14,12 +14,31 @@ import '../components/Workspace/Workspace.css';
 import EditEntityModal from '../components/Workspace/EditEntityModal';
 import MergeEntityModal from '../components/Workspace/MergeEntityModal';
 
+interface Workspace {
+    id: string;
+    name: string;
+    user_id: string;
+    doc_count: number;
+    entity_count: number;
+    created_at: string;
+    updated_at: string;
+}
+
+interface Document {
+    id: string;
+    file_name: string;
+    workspace_id: string;
+    user_id: string;
+    created_at: string;
+}
+
 const WorkspacePage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { isInitialized, user } = useAuth();
 
-    const [workspace, setWorkspace] = useState<any>(null);
+    const [documents, setDocuments] = useState<Document[]>([]);
+    const [workspace, setWorkspace] = useState<Workspace | null>(null);
     const [graphData, setGraphData] = useState<{ nodes: any[], edges: any[] }>({ nodes: [], edges: [] });
     const [selectedEntity, setSelectedEntity] = useState<any | null>(null);
     const [showUpload, setShowUpload] = useState(false);
@@ -38,13 +57,15 @@ const WorkspacePage: React.FC = () => {
         try {
             // Fetch workspace details and graph in parallel for performance
             // Use timestamp to bypass any caching for the graph data
-            const [ws, graph] = await Promise.all([
+            const [documents, ws, graph] = await Promise.all([
+                api.get(`/workspaces/${id}/documents`),
                 api.get(`/workspaces/${id}`),
                 api.get(`/workspaces/${id}/graph?t=${Date.now()}`)
             ]);
 
             setWorkspace(ws);
             setGraphData(graph || { nodes: [], edges: [] });
+            setDocuments(documents);
             setError(null);
         } catch (err: any) {
             console.error("Workspace fetch failed:", err);
@@ -107,7 +128,7 @@ const WorkspacePage: React.FC = () => {
                 >
                     <Sidebar
                         onUploadClick={() => setShowUpload(true)}
-                        documents={[]}
+                        documents={documents || []}
                         entities={graphData.nodes}
                         onEntityClick={handleNodeClick}
                     />
