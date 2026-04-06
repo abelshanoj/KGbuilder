@@ -493,3 +493,27 @@
         transform: rotate(360deg);
     }
 }
+
+/* Chat FAB */
+.ws-chat-fab {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    z-index: 1000;
+}
+
+.ws-chat-fab:hover {
+    background-color: #4f46e5; /* slightly darker or distinct primary color */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), 0 0 20px rgba(99, 102, 241, 0.4);
+}

@@ -1,17 +1,39 @@
-import requests
-import os   
+from google import genai
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
-api_key = os.getenv("GROQ_API_KEY")
-url = "https://api.groq.com/openai/v1/models"
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-headers = {
-    "Authorization": f"Bearer {api_key}",
-    "Content-Type": "application/json"
-}
+result = client.models.embed_content(
+        model="gemini-embedding-001",
+        contents= [
+            "What is the meaning of life?",
+            "What is the purpose of existence?",
+            "How do I bake a cake?"
+        ]
+)
 
-response = requests.get(url, headers=headers)
+for embedding in result.embeddings:
+    print(f"Len: {len(embedding)}")
 
-print(response.json())
+
+
+# import requests
+# import os   
+# from dotenv import load_dotenv
+
+# load_dotenv()
+
+# api_key = os.getenv("GROQ_API_KEY")
+# url = "https://api.groq.com/openai/v1/models"
+
+# headers = {
+#     "Authorization": f"Bearer {api_key}",
+#     "Content-Type": "application/json"
+# }
+
+# response = requests.get(url, headers=headers)
+
+# print(response.json())

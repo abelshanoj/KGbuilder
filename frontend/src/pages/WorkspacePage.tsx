@@ -8,7 +8,7 @@ import UploadModal from '../components/Workspace/UploadModal';
 import { api, ApiError } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, AlertCircle, RefreshCcw } from 'lucide-react';
+import { Loader2, AlertCircle, RefreshCcw, MessageCircle } from 'lucide-react';
 import '../components/Workspace/Workspace.css';
 
 import EditEntityModal from '../components/Workspace/EditEntityModal';
@@ -230,6 +230,19 @@ const WorkspacePage: React.FC = () => {
                     />
                 )}
             </AnimatePresence>
+
+            <motion.button
+                className="ws-chat-fab"
+                onClick={() => navigate(`/workspace/${id}/chat`)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
+                aria-label="Open Workspace Chat"
+            >
+                <MessageCircle size={28} />
+            </motion.button>
         </motion.div>
     );
 };

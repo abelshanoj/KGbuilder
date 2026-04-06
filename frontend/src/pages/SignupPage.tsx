@@ -19,7 +19,7 @@ const SignupPage: React.FC = () => {
         if (error) {
             setError(error.message);
         } else {
-            alert('Signup successful! Check your email for confirmation.');
+            // alert('Signup successful! Check your email for confirmation.');
             navigate('/login');
         }
         setLoading(false);

@@ -135,7 +135,7 @@ const DashboardPage: React.FC = () => {
                                     onChange={(e) => setNewWorkspaceName(e.target.value)}
                                 />
                                 <div className="modal-actions" style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                                    <button onClick={() => setShowModal(false)} className="secondary-btn" style={{ flex: 1 }}>Cancel</button>
+                                    <button onClick={() => setShowModal(false)} className="primary-btn" style={{ flex: 1 }}>Cancel</button>
                                     <button onClick={createWorkspace} className="primary-btn" style={{ flex: 1 }}>Create Workspace</button>
                                 </div>
                             </div>

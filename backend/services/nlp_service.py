@@ -1,17 +1,14 @@
-import os
 import json
-from groq import Groq
-from dotenv import load_dotenv
+import logging
+from infrastructure.llm_provider import llm_provider
 
-load_dotenv()
-
-client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+logger = logging.getLogger(__name__)
 
 class NLPService:
     @staticmethod
-    def extract_entities_and_relationships(text: str):
+    def extract_entities_and_relationships(text: str) -> dict:
         """
-        Uses Groq LLM to extract entities and relationships from text.
+        Uses LLMProvider to extract entities and relationships from text.
         Returns a validated dictionary with entities and relationships.
         """
         prompt = f"""
@@ -30,46 +27,30 @@ class NLPService:
 
         Text:
         {text[:4000]}
-
+        
         JSON Output:
         """
 
         try:
-            chat_completion = client.chat.completions.create(
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are an expert at extracting structured information from text into Knowledge Graphs. Output only JSON."
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt,
-                    }
-                ],
-                model="llama-3.1-8b-instant",
-                response_format={ "type": "json_object" }
+            raw_result = llm_provider.generate_json(
+                prompt=prompt,
+                system_prompt="You are an expert at extracting structured information from text into Knowledge Graphs. Output only JSON."
             )
-            
-            raw_result = chat_completion.choices[0].message.content
             data = json.loads(raw_result)
-            
             return NLPService._validate_and_clean(data)
             
         except Exception as e:
-            print(f"Error in NLP extraction: {e}")
+            logger.error(f"Error in NLP extraction: {e}")
             return {"entities": [], "relationships": []}
 
     @staticmethod
     def _validate_and_clean(data: dict) -> dict:
-        """
-        Validates the structure and cleans names/types.
-        """
+        """Validates the structure and cleans names/types."""
         clean_data = {"entities": [], "relationships": []}
         
         if not isinstance(data, dict):
             return clean_data
 
-        # Process entities
         entities = data.get("entities", [])
         if not isinstance(entities, list):
             entities = []
@@ -93,7 +74,6 @@ class NLPService:
                 "description": str(ent.get("description", "")).strip()
             })
 
-        # Process relationships
         relationships = data.get("relationships", [])
         if not isinstance(relationships, list):
             relationships = []
@@ -106,7 +86,6 @@ class NLPService:
             target = str(rel["target"]).strip()
             rel_type = str(rel["type"]).strip()
             
-            # Basic validation: source and target should be in existing entities
             if source.lower() in existing_entities and target.lower() in existing_entities:
                 clean_data["relationships"].append({
                     "source": source,
@@ -115,3 +94,27 @@ class NLPService:
                 })
         
         return clean_data
+
+    @staticmethod
+    def generate_rag_response(query: str, context: str) -> str:
+        """Generates a contextualized response using RAG logic."""
+        prompt = f"""
+        Answer the following question based ONLY on the provided context. If the context does not contain the answer, say "I cannot answer this based on the provided documents."
+
+        Context:
+        {context}
+
+        Question:
+        {query}
+
+        Answer:
+        """
+        try:
+            return llm_provider.generate_text(
+                prompt=prompt,
+                system_prompt="You are a helpful assistant that answers questions accurately using only the given context.",
+                model="llama-3.1-8b-instant"
+            )
+        except Exception as e:
+            logger.error(f"Error in RAG generation: {e}")
+            return "Failed to generate answer."
