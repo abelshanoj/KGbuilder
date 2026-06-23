@@ -36,7 +36,6 @@ async def create_workspace(workspace_data: WorkspaceCreate, user: dict = Depends
 @router.get("/{workspace_id}/graph")
 async def get_workspace_graph(workspace_id: str, user: dict = Depends(get_current_user)):
     user_id = user["sub"]
-    # Verify ownership before fetching graph
     workspace = supabase_adapter.get_workspace(workspace_id, user_id)
     if not workspace:
         raise HTTPException(status_code=404, detail="Workspace not found")

@@ -2,7 +2,7 @@
 Postgres RPC needed for pgvector:
 
 create or replace function match_embeddings (
-  query_embedding vector(768),
+  query_embedding vector(384),
   filter_workspace_id uuid,
   match_count int DEFAULT 5
 ) returns table (

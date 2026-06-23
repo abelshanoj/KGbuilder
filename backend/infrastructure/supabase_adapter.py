@@ -91,7 +91,7 @@ class SupabaseAdapter:
         # Bulk insert
         self.client.table("document_embeddings").insert(records).execute()
 
-    def query_embeddings(self, workspace_id: str, query_vector: list, limit: int = 5):
+    def query_embeddings(self, workspace_id: str, query_vector: list, limit: int = 10):
         # Requires match_embeddings RPC in Supabase manually if standard eq doesn't work,
         # but using the vector API:
         res = self.client.rpc("match_embeddings", {

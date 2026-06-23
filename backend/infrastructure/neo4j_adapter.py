@@ -163,17 +163,41 @@ class Neo4jAdapter:
             ))
 
     def retrieve_context(self, workspace_id: str, entity_names: list, limit: int = 50):
-        """Retrieves subgraph neighborhood context for a list of entities."""
-        if not self.driver: return []
+        if not self.driver:
+            return []
+
+        entity_names = [e.lower() for e in entity_names]
+
         query = """
         MATCH (n:Entity {workspace_id: $workspace_id})
-        WHERE n.name IN $entity_names
+        WHERE 
+            toLower(n.name) IN $entity_names
+            OR any(name IN $entity_names WHERE toLower(n.name) CONTAINS name)
+
         OPTIONAL MATCH (n)-[r]-(m:Entity {workspace_id: $workspace_id})
-        RETURN n.name AS entity, n.type AS type, n.description AS description, 
-               collect(DISTINCT {rel: type(r), connected_to: m.name})[0..$limit] AS connections
+
+        RETURN 
+            n.name AS entity,
+            n.type AS type,
+            n.description AS description,
+            collect(DISTINCT {
+                rel: type(r),
+                connected_to: m.name
+            })[0..$limit] AS connections
         """
+
         with self.driver.session(database=self.database) as session:
-            result = session.run(query, workspace_id=workspace_id, entity_names=entity_names, limit=limit)
-            return [dict(record) for record in result]
+            result = session.run(
+                query,
+                workspace_id=workspace_id,
+                entity_names=entity_names,
+                limit=limit
+            )
+
+            data = [dict(record) for record in result]
+
+            logger.info(f"Graph matched entities: {[d['entity'] for d in data]}")
+
+            return data
 
 neo4j_adapter = Neo4jAdapter()

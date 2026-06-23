@@ -1,16 +1,41 @@
 import json
 import logging
 from infrastructure.llm_provider import llm_provider
+from utils.text_normalizer import normalize_entity
 
 logger = logging.getLogger(__name__)
 
+
 class NLPService:
+
+    @staticmethod
+    def generate_response(
+        prompt: str,
+        system_prompt: str = "You are a helpful AI assistant.",
+        model: str = "llama-3.1-8b-instant",
+        max_chars: int = 12000
+    ) -> str:
+        """
+        Generic wrapper for LLM calls.
+        Handles truncation and error safety.
+        """
+
+        try:
+            # Prevent context overflow
+            safe_prompt = prompt[:max_chars]
+
+            return llm_provider.generate_text(
+                prompt=safe_prompt,
+                system_prompt=system_prompt,
+                model=model
+            )
+
+        except Exception as e:
+            logger.error(f"LLM generation failed: {e}")
+            return "Failed to generate response."
+
     @staticmethod
     def extract_entities_and_relationships(text: str) -> dict:
-        """
-        Uses LLMProvider to extract entities and relationships from text.
-        Returns a validated dictionary with entities and relationships.
-        """
         prompt = f"""
         Extract entities and relationships from the following text based on the provided schema.
         Return the output strictly in JSON format.
@@ -34,87 +59,99 @@ class NLPService:
         try:
             raw_result = llm_provider.generate_json(
                 prompt=prompt,
-                system_prompt="You are an expert at extracting structured information from text into Knowledge Graphs. Output only JSON."
+                system_prompt="You extract structured knowledge graphs. Output ONLY valid JSON."
             )
+
             data = json.loads(raw_result)
             return NLPService._validate_and_clean(data)
-            
+
         except Exception as e:
             logger.error(f"Error in NLP extraction: {e}")
             return {"entities": [], "relationships": []}
 
     @staticmethod
     def _validate_and_clean(data: dict) -> dict:
-        """Validates the structure and cleans names/types."""
         clean_data = {"entities": [], "relationships": []}
-        
+
         if not isinstance(data, dict):
             return clean_data
 
         entities = data.get("entities", [])
-        if not isinstance(entities, list):
-            entities = []
-            
         existing_entities = set()
-        for ent in entities:
-            if not isinstance(ent, dict) or "name" not in ent or "type" not in ent:
+
+        for ent in entities if isinstance(entities, list) else []:
+            if not isinstance(ent, dict):
                 continue
-            
-            name = str(ent["name"]).strip()
-            if not name:
+
+            raw_name = str(ent.get("name", "")).strip()
+            name = normalize_entity(raw_name)  
+            ent_type = str(ent.get("type", "")).strip()
+
+            if not name or not ent_type:
                 continue
-                
-            if name.lower() in existing_entities:
+
+            if name in existing_entities:
                 continue
-                
-            existing_entities.add(name.lower())
+
+            existing_entities.add(name)
+
             clean_data["entities"].append({
-                "name": name,
-                "type": str(ent["type"]).strip(),
+                "name": name,  
+                "type": ent_type.lower().strip(),
                 "description": str(ent.get("description", "")).strip()
             })
 
         relationships = data.get("relationships", [])
-        if not isinstance(relationships, list):
-            relationships = []
-            
-        for rel in relationships:
-            if not isinstance(rel, dict) or "source" not in rel or "target" not in rel or "type" not in rel:
+
+        for rel in relationships if isinstance(relationships, list) else []:
+            if not isinstance(rel, dict):
                 continue
-                
-            source = str(rel["source"]).strip()
-            target = str(rel["target"]).strip()
-            rel_type = str(rel["type"]).strip()
-            
-            if source.lower() in existing_entities and target.lower() in existing_entities:
+
+            source = normalize_entity(rel.get("source", ""))
+            target = normalize_entity(rel.get("target", ""))
+            rel_type = str(rel.get("type", "")).strip().lower()
+
+            if source in existing_entities and target in existing_entities:
                 clean_data["relationships"].append({
                     "source": source,
                     "target": target,
                     "type": rel_type
                 })
-        
+
         return clean_data
 
     @staticmethod
     def generate_rag_response(query: str, context: str) -> str:
-        """Generates a contextualized response using RAG logic."""
+
         prompt = f"""
-        Answer the following question based ONLY on the provided context. If the context does not contain the answer, say "I cannot answer this based on the provided documents."
+        You are a precise AI assistant.
 
-        Context:
-        {context}
+        Answer the question using ONLY the provided context.
 
-        Question:
+        If the answer is not present, respond exactly with:
+        "I cannot answer this based on the provided documents."
+
+        ---------------------
+        CONTEXT:
+        {context[:10000]}
+        ---------------------
+
+        QUESTION:
         {query}
 
-        Answer:
+        INSTRUCTIONS:
+        - Start directly with the answer (no introductions). There shouldn't be any text other than the answer
+        - DO NOT mention "context", "graph", or "relationships"
+        - DO NOT say "According to..."
+        - DO NOT explain where the answer comes from
+        - Be concise and factual
+        - Use bullet points if multiple facts are present
+        - Do not hallucinate or infer beyond the given data
+
+        ANSWER:
         """
-        try:
-            return llm_provider.generate_text(
-                prompt=prompt,
-                system_prompt="You are a helpful assistant that answers questions accurately using only the given context.",
-                model="llama-3.1-8b-instant"
-            )
-        except Exception as e:
-            logger.error(f"Error in RAG generation: {e}")
-            return "Failed to generate answer."
+
+        return NLPService.generate_response(
+            prompt=prompt,
+            system_prompt="You answer strictly from given context.",
+        )

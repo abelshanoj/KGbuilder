@@ -15,7 +15,6 @@ class RedisAdapter:
             return
 
         try:
-            # We use Upstash format or standard redis:// URL
             self.redis_conn = Redis.from_url(self.redis_url)
             self.queue = Queue(connection=self.redis_conn, default_timeout=1800) # 30 mins timeout for complex processing
         except Exception as e:
@@ -27,14 +26,13 @@ class RedisAdapter:
         if not self.queue:
             raise RuntimeError("Redis queue is not configured")
         
-        # We can specify retries here
         job = self.queue.enqueue(
             func, 
             *args, 
             **kwargs,
             job_timeout='30m', 
-            failure_ttl=86400, # Keep failed jobs for 1 day
-            retry=None # RQ Retry class is natively supported: from rq import Retry; retry=Retry(max=3)
+            failure_ttl=86400,
+            retry=None
         )
         return job
 

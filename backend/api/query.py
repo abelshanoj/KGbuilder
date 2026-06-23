@@ -3,6 +3,9 @@ from core.security import get_current_user
 from infrastructure.supabase_adapter import supabase_adapter
 from models.schemas import QueryRequest, QueryResponse
 from langgraph.query_graph import query_pipeline
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["query"])
 
@@ -17,6 +20,8 @@ async def execute_query(request: QueryRequest, user: dict = Depends(get_current_
         "workspace_id": request.workspace_id,
         "query": request.query
     }
+
+    logger.info(f"Initial state: {initial_state}")
     
     try:
         final_state = query_pipeline.invoke(initial_state)

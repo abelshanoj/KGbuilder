@@ -43,7 +43,7 @@ async def upload_and_process(workspace_id: str, file: UploadFile = File(...), us
     
     os.remove(tmp_path)
 
-    # Note: the user requested document to have status='pending' and include a job_id.
+    # Note: the us  er requested document to have status='pending' and include a job_id.
     # We will generate a job ID prefix or let RQ generate it.
     
     # Store initial pending document row
@@ -54,12 +54,11 @@ async def upload_and_process(workspace_id: str, file: UploadFile = File(...), us
     document_id = document["id"]
 
     try:
-        # Enqueue Job
         job = redis_adapter.enqueue_job(
             process_document_task,
             args=None,
             kwargs={
-                "job_id": None, # Will be set by RQ job.id
+                "job_id": None,
                 "workspace_id": workspace_id,
                 "user_id": user_id,
                 "document_id": document_id,
@@ -69,7 +68,7 @@ async def upload_and_process(workspace_id: str, file: UploadFile = File(...), us
         )
         # Update kwargs job_id with actual job ID
         job.kwargs["job_id"] = job.id
-        job.save_meta() # Optional, but we just pass job_id into supabase below
+        job.save_meta()
         
         # We need to tell Supabase about the job_id
         supabase_adapter.update_document_job(document_id, status="queued", job_id=job.id)

@@ -36,7 +36,6 @@ def process_document_task(job_id: str, workspace_id: str, user_id: str, document
         final_state = ingestion_pipeline.invoke(initial_state)
         
         # 4. Update Workspace stats
-        # To be accurate, let's fetch current counts
         workspace = supabase_adapter.get_workspace(workspace_id, user_id)
         if workspace:
             current_doc_count = workspace.get("doc_count", 0)

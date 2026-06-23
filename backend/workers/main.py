@@ -21,14 +21,11 @@ def start_worker():
     queues = ["default"]
     logger.info("Initializing RQ worker. Listening on 'default' queue...")
 
-    # ── NEW MODERN WAY ──
-    # No "with Connection()" needed anymore
     worker = Worker(
-        queues=queues,                    # or ["default"]
-        connection=redis_adapter.redis_conn   # ← this is the important part
+        queues=queues,
+        connection= redis_adapter.redis_conn
     )
 
-    # Start the listening loop
     worker.work(with_scheduler=True)
 
 

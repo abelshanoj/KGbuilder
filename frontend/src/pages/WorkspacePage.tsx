@@ -30,6 +30,8 @@ interface Document {
     workspace_id: string;
     user_id: string;
     created_at: string;
+    status?: string;
+    error?: string;
 }
 
 const WorkspacePage: React.FC = () => {
@@ -47,6 +49,7 @@ const WorkspacePage: React.FC = () => {
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<{ status?: number; message: string } | null>(null);
+    const [isPolling, setIsPolling] = useState(false);
 
     const fetchWorkspaceData = useCallback(async (isRetry = false) => {
         if (!id) return;
@@ -67,6 +70,13 @@ const WorkspacePage: React.FC = () => {
             setGraphData(graph || { nodes: [], edges: [] });
             setDocuments(documents);
             setError(null);
+            
+            // Check if any documents are currently processing
+            const hasPending = documents.some((d: Document) => 
+                ['pending', 'queued', 'processing'].includes(d.status || 'unknown')
+            );
+            setIsPolling(hasPending);
+            
         } catch (err: any) {
             console.error("Workspace fetch failed:", err);
 
@@ -97,6 +107,32 @@ const WorkspacePage: React.FC = () => {
             fetchWorkspaceData();
         }
     }, [isInitialized, user, id, fetchWorkspaceData]);
+
+    useEffect(() => {
+        if (!isPolling || !id) return;
+
+        const interval = setInterval(async () => {
+            try {
+                // Poll only the documents endpoint in one shot to save heavy graph/workspace calls
+                const docs = await api.get(`/workspaces/${id}/documents`);
+                setDocuments(docs);
+                
+                const hasPending = docs.some((d: Document) => 
+                    ['pending', 'queued', 'processing'].includes(d.status || 'unknown')
+                );
+                
+                if (!hasPending) {
+                    setIsPolling(false);
+                    // Jobs finished, do a full data fetch to refresh the knowledge graph
+                    fetchWorkspaceData(true);
+                }
+            } catch (err) {
+                console.error("Polling failed:", err);
+            }
+        }, 5000); // 5 sec interval
+
+        return () => clearInterval(interval);
+    }, [isPolling, id, fetchWorkspaceData]);
 
     const handleNodeClick = (node: any) => setSelectedEntity(node);
     const handlePanelClose = () => setSelectedEntity(null);

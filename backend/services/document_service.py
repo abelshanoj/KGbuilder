@@ -3,6 +3,7 @@ import os
 import tempfile
 import logging
 from infrastructure.supabase_adapter import supabase_adapter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 logger = logging.getLogger(__name__)
 
@@ -52,23 +53,12 @@ class DocumentService:
                 os.remove(local_path)
 
     @staticmethod
-    def chunk_text(text: str, chunk_size: int = 600, overlap: int = 100) -> list[str]:
+    def chunk_text(text: str, chunk_size: int = 100, overlap: int = 20) -> list[str]:
         """
         Splits text into chunks of roughly `chunk_size` words with `overlap` words.
         Since standard tokens usually map to ~0.75 words, 600 words is approx 800 tokens.
         """
-        words = text.split()
-        chunks = []
-        if not words:
-            return chunks
-            
-        for i in range(0, len(words), max(1, chunk_size - overlap)):
-            chunk = " ".join(words[i:i + chunk_size])
-            if chunk:
-                chunks.append(chunk)
-                
-            # Break if exactly reached the end without a full offset left
-            if i + chunk_size >= len(words):
-                break
-                
+        splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=overlap)
+        chunks = splitter.split_text(text)
+
         return chunks

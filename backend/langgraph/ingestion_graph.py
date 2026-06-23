@@ -26,6 +26,7 @@ def fetch_and_chunk(state: IngestionState):
 def extract_entities(state: IngestionState):
     logger.info(f"[{state['document_id']}] Extracting entities via LLM")
     extraction = NLPService.extract_entities_and_relationships(state["text"])
+    logger.info(f"Extraction: {extraction}")
     return {"extraction": extraction}
 
 def embed_and_store(state: IngestionState):
